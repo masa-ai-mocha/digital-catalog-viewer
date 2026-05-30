@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #1f2937;
+  background: #f5f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 30rem),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  font-family:
+    Arial,
+    "Hiragino Sans",
+    "Yu Gothic",
+    Meiryo,
+    sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.page-turn {
+  animation: pageTurn 260ms ease-out;
+}
+
+@keyframes pageTurn {
+  0% {
+    opacity: 0.72;
+    transform: translateX(14px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.page-turn-back {
+  animation: pageTurnBack 260ms ease-out;
+}
+
+@keyframes pageTurnBack {
+  0% {
+    opacity: 0.72;
+    transform: translateX(-14px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
