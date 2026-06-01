@@ -28,6 +28,7 @@ type CatalogViewerProps = {
   data: CatalogData;
   onDataChange: (data: CatalogData) => void;
   onCatalogPageCount: (catalogId: string, totalPages: number) => void;
+  variant?: "default" | "embed";
 };
 
 type DialogState =
@@ -40,8 +41,10 @@ export function CatalogViewer({
   catalog,
   data,
   onDataChange,
-  onCatalogPageCount
+  onCatalogPageCount,
+  variant = "default"
 }: CatalogViewerProps) {
+  const isEmbed = variant === "embed";
   const [pdf, setPdf] = useState<LoadedPdf | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
@@ -215,7 +218,7 @@ export function CatalogViewer({
 
   if (!catalog) {
     return (
-      <section className="grid min-h-[72vh] place-items-center px-4">
+      <section className={isEmbed ? "grid min-h-screen place-items-center px-4" : "grid min-h-[72vh] place-items-center px-4"}>
         <div className="max-w-xl rounded-lg border border-slateLine bg-white p-8 text-center shadow-sm">
           <BookOpen className="mx-auto h-12 w-12 text-catalogBlue" />
           <h1 className="mt-4 text-xl font-semibold text-navy">PDFカタログをアップロードしてください</h1>
@@ -231,7 +234,8 @@ export function CatalogViewer({
   const orderLink = qrLinks.find((link) => link.type === "order") ?? qrLinks[1];
 
   return (
-    <div className="flex min-h-[calc(100vh-72px)] flex-col">
+    <div className={isEmbed ? "flex min-h-screen flex-col bg-slate-100 text-ink" : "flex min-h-[calc(100vh-72px)] flex-col"}>
+      {!isEmbed ? (
       <div className="border-b border-slateLine bg-white/90 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div>
@@ -264,11 +268,20 @@ export function CatalogViewer({
           </div>
         </div>
       </div>
+      ) : null}
 
-      <main className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-4 px-4 py-4 lg:grid-cols-[1fr_320px]">
+      <main
+        className={
+          isEmbed
+            ? "grid w-full flex-1 grid-cols-1 gap-3 px-2 py-2 sm:px-3 sm:py-3"
+            : "mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-4 px-4 py-4 lg:grid-cols-[1fr_320px]"
+        }
+      >
         <section className="min-w-0">
           <div
-            className="relative flex min-h-[58vh] items-center justify-center rounded-lg border border-slateLine bg-slate-100 p-3 shadow-inner sm:p-5"
+            className={`relative flex items-center justify-center rounded-lg border border-slateLine bg-slate-100 p-3 shadow-inner sm:p-5 ${
+              isEmbed ? "min-h-[calc(100vh-132px)]" : "min-h-[58vh]"
+            }`}
           >
             <button
               type="button"
@@ -336,6 +349,36 @@ export function CatalogViewer({
               </button>
             </form>
             <div className="flex items-center gap-2">
+              {isEmbed && visibleProducts.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setDialog({ type: "products" })}
+                  className="inline-flex h-10 items-center gap-2 rounded-md border border-slateLine bg-white px-3 text-sm font-semibold text-navy hover:border-catalogBlue"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  商品リンク
+                </button>
+              ) : null}
+              {isEmbed && inquiryLink ? (
+                <button
+                  type="button"
+                  onClick={() => setDialog({ type: "qr", link: inquiryLink })}
+                  className="inline-flex h-10 items-center gap-2 rounded-md border border-slateLine bg-white px-3 text-sm font-semibold text-navy hover:border-catalogBlue"
+                >
+                  <MessageSquareText className="h-4 w-4" />
+                  問い合わせ
+                </button>
+              ) : null}
+              {isEmbed && orderLink ? (
+                <button
+                  type="button"
+                  onClick={() => setDialog({ type: "qr", link: orderLink })}
+                  className="inline-flex h-10 items-center gap-2 rounded-md bg-navy px-3 text-sm font-semibold text-white hover:bg-slate-800"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  発注
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={handleBookmarkToggle}
@@ -360,6 +403,7 @@ export function CatalogViewer({
           </div>
         </section>
 
+        {!isEmbed ? (
         <aside className="space-y-4">
           <section className="rounded-lg border border-slateLine bg-white p-4 shadow-sm">
             <div className="mb-3 flex items-center justify-between gap-2">
@@ -399,6 +443,7 @@ export function CatalogViewer({
             </div>
           </section>
         </aside>
+        ) : null}
       </main>
 
       <ThumbnailStrip
